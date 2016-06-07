@@ -17,30 +17,33 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#include "../defs/defs.h"
-
-
-union s
+struct test_call
 {
-    struct test_call tc;
-    char c[sizeof(struct test_call)];
+    char msg[64];
+    int byte_arr[128];
+    void (*pmsg)(void*);
 };
 
+
+
+static void  pfoo(void* p) {
+    printf("ASASASASAA");
+}
 
 int main(int argc, char *argv[])
 {
     (void) argc;
     (void) argv;
 
-    union s buff;
-    strcpy(buff.tc.msg, "sender message");
-
+    struct test_call buff;
+    strcpy(buff.msg, "sender message");
     int i =0;
     while (i < 128) {
-        buff.tc.byte_arr[i] = i;
+        buff.byte_arr[i] = i;
         i++;
     }
-    buff.tc.pmsg = 0;
+     buff.pmsg = pfoo;
+
     int num = 0, fd = 0;
 
     mknod(FIFO_NAME, S_IFIFO|0666, 0);

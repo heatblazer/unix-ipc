@@ -17,13 +17,19 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#include "../defs/defs.h"
-
-union s
+struct test_call
 {
-    struct test_call tc;
-    char c[sizeof(struct test_call)];
+    char msg[64];
+    int byte_arr[128];
+    void (*pmsg)(void*);
 };
+
+
+
+static void _p(void* pmsg)
+{
+    printf("[%s]\n", pmsg);
+}
 
 int main(int argc, char *argv[])
 {
@@ -37,16 +43,16 @@ int main(int argc, char *argv[])
     fd = open(FIFO_NAME, O_RDONLY);
 
     printf("Got a writer!\n");
-    union s ubuff;
+    struct test_call ubuff;
 
     do {
-        if ((num = read(fd, ubuff.c, sizeof(struct test_call)))==-1) {
+        if ((num = read(fd, &ubuff, sizeof(struct test_call)))==-1) {
             perror("read");
         } else {
-            struct test_call *tc = (struct test_call*)&ubuff.tc;
-            printf("[%s]\n", tc->msg);
+            struct test_call *tc = (struct test_call*)&ubuff;
+
             if (tc->pmsg) {
-                tc->pmsg();
+                tc->pmsg((char*)tc->msg);
             }
         }
 
