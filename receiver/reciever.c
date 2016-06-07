@@ -28,7 +28,9 @@ struct test_call
 
 static void _p(void* pmsg)
 {
-    printf("[%s]\n", pmsg);
+
+
+    printf("[%s]\n",(char*)pmsg);
 }
 
 int main(int argc, char *argv[])
@@ -43,17 +45,15 @@ int main(int argc, char *argv[])
     fd = open(FIFO_NAME, O_RDONLY);
 
     printf("Got a writer!\n");
-    struct test_call ubuff;
+    char ubuff[sizeof(struct test_call)] = {0};
 
     do {
-        if ((num = read(fd, &ubuff, sizeof(struct test_call)))==-1) {
+        if ((num = read(fd, ubuff, sizeof(struct test_call)))==-1) {
             perror("read");
         } else {
-            struct test_call *tc = (struct test_call*)&ubuff;
-
-            if (tc->pmsg) {
-                tc->pmsg((char*)tc->msg);
-            }
+            struct test_call* tc = (struct test_call*) ubuff;
+            tc->pmsg = _p;
+            tc->pmsg(tc->msg);
         }
 
     } while (num > 0);

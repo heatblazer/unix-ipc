@@ -26,8 +26,8 @@ struct test_call
 
 
 
-static void  pfoo(void* p) {
-    printf("ASASASASAA");
+static void  pfoo(void* p)
+{
 }
 
 int main(int argc, char *argv[])
@@ -42,13 +42,14 @@ int main(int argc, char *argv[])
         buff.byte_arr[i] = i;
         i++;
     }
-     buff.pmsg = pfoo;
+    buff.pmsg = pfoo;
 
     int num = 0, fd = 0;
 
     mknod(FIFO_NAME, S_IFIFO|0666, 0);
     printf("waiting for readers..\n");
     fd = open(FIFO_NAME, O_WRONLY);
+
     while (1)  {
         sleep(2);
         if ((num = write(fd,
