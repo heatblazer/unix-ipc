@@ -4,6 +4,7 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     sender \
-    receiver
+    receiver \
+    bridge
 
 DESTDIR = ipc
