@@ -21,20 +21,56 @@ struct test_call
 {
     char msg[64];
     int  result;
+    pid_t m_pid;
 };
 
+void lockFile(int fd, struct flock* fl)
+{
+    printf("locking file...\n");
 
-void doTask(struct test_call *tc)
+    fl->l_type = F_RDLCK | F_WRLCK;
+    fl->l_start = SEEK_SET;
+
+    if (fcntl(fd, F_SETLKW, fl) == -1) {
+        perror("fcntl");
+        exit(1);
+    }
+
+    printf("locked!\n");
+}
+
+
+void unlockFile(int fd, struct flock* fl)
+{
+    printf("unlocking file...\n");
+    fl->l_type = F_UNLCK;
+    fl->l_start = SEEK_END;
+
+    if (fcntl(fd, F_SETLK, fl) == -1) {
+        perror("fcntl");
+        exit(1);
+    }
+    printf("unlocked!\n");
+}
+
+void doTask(struct test_call *tc, int res, pid_t t)
 {
     memset(tc->msg, 0, sizeof(tc->msg));
     strcpy(tc->msg, "bridge worked the data");
-    tc->result = 0;
+    tc->result = res;
+    tc->m_pid = t;
 }
+
+
 
 int main(int argc, char *argv[])
 {
     (void)argc;
     (void) argv;
+
+    struct flock fl= {F_WRLCK, SEEK_SET, 0, 0,0};
+
+    fl.l_pid = getpid(); // bridge`s pid
 
     int num, fd;
     mknod(FIFO_NAME, S_IFIFO|0666, 0);
@@ -43,26 +79,28 @@ int main(int argc, char *argv[])
 
     fd = open(FIFO_NAME, O_RDWR); // read and write back
 
-    printf("Waiting for requests from writers...\n");
+    printf("Waiting for requests from writers and readers ...\n");
 
     while (1) {
 
         if ((num = read(fd, ibuff, sizeof(ibuff)))==-1) {
             perror("read");
-            continue;
         } else {
+            lockFile(fd, &fl);
             printf("request to work a data\n");
-            doTask((struct test_call*) ibuff);
+            doTask((struct test_call*)ibuff, 1200, getpid());
 
             // afer that we want to write back to the expected reader
-            num = write(fd, ibuff, sizeof(struct test_call));
-                // cant write now to file
-
+            if ((num = write(fd, ibuff, sizeof(struct test_call))) == -1 ) {
+                perror("write");
+            } else {
+                unlockFile(fd, &fl);
+            }
         }
 
     }
 
-
+    close(fd);
 
     return 0;
 }
