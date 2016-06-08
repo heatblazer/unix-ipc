@@ -1,4 +1,7 @@
 #define FIFO_NAME "/home/ilian/msgpipe"
+// message struct
+#include "../defs/defs.h" // msg
+
 // ansi-c
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,35 +20,25 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-struct test_call
-{
-    char msg[64];
-    int result;
-    pid_t m_pid;
-};
-
-
-
-
 int main(int argc, char *argv[])
 {
     (void) argc;
     (void) argv;
 
     int num, fd;
-    mknod(FIFO_NAME, S_IFIFO|0666, 0);
+    //mknod(FIFO_NAME, S_IFIFO|0666, 0);
     printf("waiting for writers\n");
     fd = open(FIFO_NAME, O_RDONLY);
     printf("Got a writer!\n");
-    char ubuff[sizeof(struct test_call)] = {0};
+    char ubuff[sizeof(struct msg)] = {0};
 
     do {
-        if ((num = read(fd, ubuff, sizeof(struct test_call)))==-1) {
+        if ((num = read(fd, ubuff, sizeof(struct msg)))==-1) {
             perror("read");
         } else {
-            struct test_call* tc = (struct test_call*) ubuff;
+            struct msg* tc = (struct msg*) ubuff;
             printf("[message: %s][result: %d][procid: %d]\n",
-                   tc->msg, tc->result, tc->m_pid);
+                   tc->message, tc->result, tc->m_pid);
         }
         sleep(1);
     } while (1);

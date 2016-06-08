@@ -1,4 +1,7 @@
 #define FIFO_NAME "/home/ilian/msgpipe"
+// default message structure
+#include "../defs/defs.h" // for the msg  struct
+
 // ansi-c
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,36 +20,28 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-struct test_call
-{
-    char msg[64];
-    int  result;
-    pid_t m_pid;
-};
-
-
 
 int main(int argc, char *argv[])
 {
     (void) argc;
     (void) argv;
 
-    struct test_call buff;
+    struct msg buff;
     // set defaults to send
-    strcpy(buff.msg, "I am sending data");
+    strcpy(buff.message, "I am sending data");
     buff.result = 0;
 
 
     int num = 0, fd = 0;
 
-    mknod(FIFO_NAME, S_IFIFO|0666, 0);
+    //mknod(FIFO_NAME, S_IFIFO|0666, 0);
     printf("waiting for readers..\n");
     fd = open(FIFO_NAME, O_WRONLY);
 
     while (1)  {
         if ((num = write(fd,
                          (struct test_call*)&buff,
-                        sizeof(struct test_call))) == -1) {
+                        sizeof(struct msg))) == -1) {
             perror("write");
         } else {
             printf("sending %d data\n", num);
