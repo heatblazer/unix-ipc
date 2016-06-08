@@ -20,15 +20,10 @@
 struct test_call
 {
     char msg[64];
-    int byte_arr[128];
-    void (*pmsg)(void*);
+    int  result;
 };
 
 
-
-static void  pfoo(void* p)
-{
-}
 
 int main(int argc, char *argv[])
 {
@@ -36,13 +31,10 @@ int main(int argc, char *argv[])
     (void) argv;
 
     struct test_call buff;
-    strcpy(buff.msg, "sender message");
-    int i =0;
-    while (i < 128) {
-        buff.byte_arr[i] = i;
-        i++;
-    }
-    buff.pmsg = pfoo;
+    // set defaults to send
+    strcpy(buff.msg, "I am sending data");
+    buff.result = 0;
+
 
     int num = 0, fd = 0;
 

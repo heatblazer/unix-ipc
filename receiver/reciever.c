@@ -20,18 +20,11 @@
 struct test_call
 {
     char msg[64];
-    int byte_arr[128];
-    void (*pmsg)(void*);
+    int result;
 };
 
 
 
-static void _p(void* pmsg)
-{
-
-
-    printf("[%s]\n",(char*)pmsg);
-}
 
 int main(int argc, char *argv[])
 {
@@ -52,11 +45,10 @@ int main(int argc, char *argv[])
             perror("read");
         } else {
             struct test_call* tc = (struct test_call*) ubuff;
-            tc->pmsg = _p;
-            tc->pmsg(tc->msg);
+            printf("[%s][%d]\n", tc->msg, tc->result);
         }
 
-    } while (num > 0);
+    } while (1);
 
     return 0;
 }
