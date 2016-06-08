@@ -1,9 +1,10 @@
 #pragma once
-
-struct test_call
+#pragma pack(1)
+struct msg
 {
-    char msg[64];
-    int byte_arr[128];
-    void (*pmsg)(void);
+    char message[256];
+    int  result;
+    int m_pid;
+    char univ[1];
 };
 
