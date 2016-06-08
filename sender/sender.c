@@ -21,6 +21,7 @@ struct test_call
 {
     char msg[64];
     int  result;
+    pid_t m_pid;
 };
 
 
@@ -43,7 +44,6 @@ int main(int argc, char *argv[])
     fd = open(FIFO_NAME, O_WRONLY);
 
     while (1)  {
-        sleep(2);
         if ((num = write(fd,
                          (struct test_call*)&buff,
                         sizeof(struct test_call))) == -1) {
@@ -51,6 +51,7 @@ int main(int argc, char *argv[])
         } else {
             printf("sending %d data\n", num);
         }
+        sleep(1);
     }
 
     return 0;

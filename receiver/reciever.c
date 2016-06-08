@@ -21,6 +21,7 @@ struct test_call
 {
     char msg[64];
     int result;
+    pid_t m_pid;
 };
 
 
@@ -31,12 +32,10 @@ int main(int argc, char *argv[])
     (void) argc;
     (void) argv;
 
-
     int num, fd;
     mknod(FIFO_NAME, S_IFIFO|0666, 0);
     printf("waiting for writers\n");
     fd = open(FIFO_NAME, O_RDONLY);
-
     printf("Got a writer!\n");
     char ubuff[sizeof(struct test_call)] = {0};
 
@@ -45,9 +44,10 @@ int main(int argc, char *argv[])
             perror("read");
         } else {
             struct test_call* tc = (struct test_call*) ubuff;
-            printf("[%s][%d]\n", tc->msg, tc->result);
+            printf("[message: %s][result: %d][procid: %d]\n",
+                   tc->msg, tc->result, tc->m_pid);
         }
-
+        sleep(1);
     } while (1);
 
     return 0;
