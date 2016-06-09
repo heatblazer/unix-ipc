@@ -1,4 +1,3 @@
-#define FIFO_NAME "/home/ilian/msgpipe"
 // message struct
 #include "../defs/defs.h" // msg
 
@@ -28,7 +27,7 @@ int main(int argc, char *argv[])
     int num, fd;
     //mknod(FIFO_NAME, S_IFIFO|0666, 0);
     printf("waiting for writers\n");
-    fd = open(FIFO_NAME, O_RDONLY);
+    fd = open(WPIPE_NAME, O_RDONLY);
     printf("Got a writer!\n");
     char ubuff[sizeof(struct msg)] = {0};
 

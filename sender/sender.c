@@ -1,4 +1,3 @@
-#define FIFO_NAME "/home/ilian/msgpipe"
 // default message structure
 #include "../defs/defs.h" // for the msg  struct
 
@@ -36,7 +35,7 @@ int main(int argc, char *argv[])
 
     //mknod(FIFO_NAME, S_IFIFO|0666, 0);
     printf("waiting for readers..\n");
-    fd = open(FIFO_NAME, O_WRONLY);
+    fd = open(RPIPE_NAME, O_WRONLY);
 
     while (1)  {
         if ((num = write(fd,
