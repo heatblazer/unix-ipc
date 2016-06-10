@@ -7,6 +7,6 @@ SUBDIRS += \
     receiver \
     bridge \
     socket-client \
-    socket-server
+    socket-server \
 
 DESTDIR = ipc
