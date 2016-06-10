@@ -5,6 +5,8 @@ TEMPLATE = subdirs
 SUBDIRS += \
     sender \
     receiver \
-    bridge
+    bridge \
+    socket-client \
+    socket-server
 
 DESTDIR = ipc
