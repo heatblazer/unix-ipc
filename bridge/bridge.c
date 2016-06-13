@@ -64,6 +64,7 @@ int main(int argc, char *argv[])
     (void)argc;
     (void) argv;
 
+
     struct flock fl= {F_WRLCK,SEEK_SET,0,0,0};
 
     fl.l_pid = getpid(); // bridge`s pid
@@ -80,7 +81,9 @@ int main(int argc, char *argv[])
 
     printf("Waiting for requests from writers and readers ...\n");
 
-    while (1) {
+
+
+    for (;;) {
 
         if ((num = read(fdr, ibuff, sizeof(ibuff)))==-1) {
             perror("read");
