@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
     printf("waiting for readers..\n");
     fd = open(RPIPE_NAME, O_WRONLY);
 
-    while (1)  {
+    for (;;)  {
         if ((num = write(fd,
                          (struct test_call*)&buff,
                         sizeof(struct msg))) == -1) {

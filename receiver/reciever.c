@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
     printf("Got a writer!\n");
     char ubuff[sizeof(struct msg)] = {0};
 
-    do {
+    for(;;) {
         if ((num = read(fd, ubuff, sizeof(struct msg)))==-1) {
             perror("read");
         } else {
@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
                    tc->message, tc->result, tc->m_pid);
         }
         sleep(1);
-    } while (1);
+    }
 
     return 0;
 }
