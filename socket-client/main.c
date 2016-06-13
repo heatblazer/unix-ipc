@@ -15,7 +15,7 @@
 int main(int argc, char *argv[])
 {
     int s, s2, t, len;
-    struct sockaddr_un local, remote;
+    struct sockaddr_un remote;
     char str[256] = {0};
 
     if ((s=socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
@@ -23,10 +23,10 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    local.sun_family = AF_UNIX;
-    strcpy(local.sun_path, SOCK_PATH);
+    remote.sun_family = AF_UNIX;
+    strcpy(remote.sun_path, SOCK_PATH);
 
-    len = strlen(local.sun_path + sizeof(local.sun_family));
+    len = strlen(remote.sun_path + sizeof(remote.sun_family));
 
     if (connect(s, (struct sockaddr*)&remote, len) == -1) {
         perror("connect");
@@ -35,7 +35,8 @@ int main(int argc, char *argv[])
 
     printf("Connected!\n");
 
-    while(printf(">"), fgets(str, sizeof(str)/sizeof(char), stdin), !feof(stdin)) {
+    while(printf(">"), fgets(str, 256, stdin), !feof(stdin)) {
+
         if (send(s, str, strlen(str), 0) == -1) {
             perror("send");
             exit(1);

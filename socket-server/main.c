@@ -5,67 +5,120 @@
 #include <string.h>
 
 #include <errno.h>
+#include <unistd.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 
+#include <arpa/inet.h>
+#include <pthread.h>
+
+
+void *connection_handler(void*);
 
 
 int main(int argc, char *argv[])
 {
-    int s, s2, t, len;
-    struct sockaddr_un local, remote;
-    char str[256] = {0};
+int socket_desc , client_sock , c;
+   struct sockaddr_in server , client;
 
-    if ((s=socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
-        perror("socket");
-        exit(1);
+   //Create socket
+   socket_desc = socket(AF_INET , SOCK_STREAM , 0);
+   if (socket_desc == -1)
+   {
+       printf("Could not create socket");
+   }
+   puts("Socket created");
+
+   //Prepare the sockaddr_in structure
+   server.sin_family = AF_INET;
+   server.sin_addr.s_addr = INADDR_ANY;
+   server.sin_port = htons( 8888 );
+
+   //Bind
+   if( bind(socket_desc,(struct sockaddr *)&server , sizeof(server)) < 0)
+   {
+       //print the error message
+       perror("bind failed. Error");
+       return 1;
+   }
+   puts("bind done");
+
+   //Listen
+   listen(socket_desc , 3);
+
+   //Accept and incoming connection
+   puts("Waiting for incoming connections...");
+   c = sizeof(struct sockaddr_in);
+
+
+   //Accept and incoming connection
+   puts("Waiting for incoming connections...");
+   c = sizeof(struct sockaddr_in);
+   pthread_t thread_id;
+
+   while( (client_sock = accept(socket_desc, (struct sockaddr *)&client, (socklen_t*)&c)) )
+   {
+       puts("Connection accepted");
+
+       if( pthread_create( &thread_id , NULL ,  connection_handler , (void*) &client_sock) < 0)
+       {
+           perror("could not create thread");
+           return 1;
+       }
+
+       //Now join the thread , so that we dont terminate before the thread
+       //pthread_join( thread_id , NULL);
+       puts("Handler assigned");
+   }
+
+   if (client_sock < 0)
+   {
+       perror("accept failed");
+       return 1;
+   }
+
+   return 0;
+}
+
+
+void *connection_handler(void *socket_desc)
+{
+    //Get the socket descriptor
+    int sock = *(int*)socket_desc;
+    int read_size;
+    char *message , client_message[2000];
+
+    //Send some messages to the client
+    message = "Greetings! I am your connection handler\n";
+    write(sock , message , strlen(message));
+
+    message = "Now type something and i shall repeat what you type \n";
+    write(sock , message , strlen(message));
+
+    //Receive a message from client
+    while( (read_size = recv(sock , client_message , 2000 , 0)) > 0 )
+    {
+        //end of string marker
+        client_message[read_size] = '\0';
+
+        //Send the message back to client
+        write(sock , client_message , strlen(client_message));
+
+        //clear the message buffer
+        memset(client_message, 0, 2000);
     }
 
-    local.sun_family = AF_UNIX;
-    strcpy(local.sun_path, SOCK_PATH);
-    remove(local.sun_path);
-
-    len = strlen(local.sun_path + sizeof(local.sun_family));
-    if (bind(s, (struct sockaddr*)&local, len) == -1 ) {
-        perror("bind");
-        exit(1);
+    if(read_size == 0)
+    {
+        puts("Client disconnected");
+        fflush(stdout);
     }
-
-    if(listen(s, 5) == -1) {
-        perror("listen");
-        exit(1);
+    else if(read_size == -1)
+    {
+        perror("recv failed");
     }
-
-
-    for(;;) {
-        int done, n;
-        printf("Waiting for connection...\n");
-        t = sizeof(remote);
-        if ((s2 = accept(s, (struct sockaddr*)&remote, &t))==-1) {
-            perror("accept");
-            exit(1);
-        }
-        printf("Connecetd!\n");
-
-        done = 0;
-        do {
-
-            if ((n = recv(s2, str, sizeof(str)/sizeof(char), 0)) <= 0) {
-                perror("recv");
-                done = 1;
-            }
-
-            if (!done) {
-                if (send(s2, str, n, 0) < 0) {
-                    perror("send");
-                    done = 1;
-                }
-            }
-        } while (!done);
-        close(s2);
-    } // end forever
 
     return 0;
 }
