@@ -39,9 +39,7 @@ int main(int argc, char *argv[])
             struct msg* tc = (struct msg*) ubuff;
             printf("[message: %s][result: %d][procid: %d]\n",
                    tc->message, tc->result, tc->pid);
-
         }
-        sleep(1);
     }
 
     return 0;

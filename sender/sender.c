@@ -36,15 +36,19 @@ int main(int argc, char *argv[])
     fd = open(RPIPE_NAME, O_WRONLY);
 
     for (;;)  {
-        if ((num = write(fd,
-                         (struct msg*)&buff,
-                        sizeof(struct msg))) == -1) {
-            perror("write");
-        } else {
-            printf("sending %d data\n", num);
-        }
-        sleep(1);
-    }
+        char mbuff[256]= {0};
+        while (fgets(mbuff, 256, stdin) >= 0) {
+            strcpy(((struct msg*)&buff)->message, mbuff);
+            if ((num = write(fd,
+                             (struct msg*)&buff,
+                            sizeof(struct msg))) == -1) {
+                perror("write");
+                break;
+            } else {
+                printf("sending %d data\n", num);
+            }
+        } // else - nothign
+    } // forever
 
     return 0;
 }
