@@ -6,7 +6,9 @@ SUBDIRS += \
     sender \
     receiver \
     bridge \
-    defs
+    defs \
+    msg-send \
+    msg-recv
 
 
 DESTDIR = ipc
