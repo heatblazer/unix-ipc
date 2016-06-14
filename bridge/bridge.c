@@ -54,7 +54,7 @@ void doTask(struct msg *tc, int res, pid_t t)
     memset(tc->message, 0, sizeof(tc->message));
     strcpy(tc->message, "bridge worked the data");
     tc->result = res;
-    tc->m_pid = (pid_t)t;
+    tc->pid = (pid_t)t;
 }
 
 

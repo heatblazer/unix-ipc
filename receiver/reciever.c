@@ -1,5 +1,5 @@
 // message struct
-#include "../defs/defs.h" // msg
+#include "../defs/defs.h"
 
 // ansi-c
 #include <stdio.h>
@@ -19,6 +19,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+
 int main(int argc, char *argv[])
 {
     (void) argc;
@@ -37,7 +38,8 @@ int main(int argc, char *argv[])
         } else {
             struct msg* tc = (struct msg*) ubuff;
             printf("[message: %s][result: %d][procid: %d]\n",
-                   tc->message, tc->result, tc->m_pid);
+                   tc->message, tc->result, tc->pid);
+
         }
         sleep(1);
     }

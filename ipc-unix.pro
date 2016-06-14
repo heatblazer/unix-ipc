@@ -6,6 +6,9 @@ SUBDIRS += \
     sender \
     receiver \
     bridge \
+    defs
 
 
 DESTDIR = ipc
+
+

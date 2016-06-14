@@ -29,8 +29,6 @@ int main(int argc, char *argv[])
     // set defaults to send
     strcpy(buff.message, "I am sending data");
     buff.result = 0;
-
-
     int num = 0, fd = 0;
 
     //mknod(FIFO_NAME, S_IFIFO|0666, 0);
@@ -39,7 +37,7 @@ int main(int argc, char *argv[])
 
     for (;;)  {
         if ((num = write(fd,
-                         (struct test_call*)&buff,
+                         (struct msg*)&buff,
                         sizeof(struct msg))) == -1) {
             perror("write");
         } else {
