@@ -1,8 +1,8 @@
 #pragma once
 
-// TODO - move it to the /tmp 
-#define RPIPE_NAME "/home/ilian/rpipe"
-#define WPIPE_NAME "/home/ilian/wpipe"
+
+#define RPIPE_NAME "/tmp/rpipe"
+#define WPIPE_NAME "/tmp/wpipe"
 
 #pragma pack(1)
 struct msg
