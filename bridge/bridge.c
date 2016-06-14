@@ -81,8 +81,6 @@ int main(int argc, char *argv[])
 
     printf("Waiting for requests from writers and readers ...\n");
 
-
-
     for (;;) {
 
         if ((num = read(fdr, ibuff, sizeof(ibuff)))==-1) {
