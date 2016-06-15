@@ -8,7 +8,8 @@ SUBDIRS += \
     bridge \
     defs \
     msg-send \
-    msg-recv
+    msg-recv \
+    inet-client
 
 
 DESTDIR = ipc

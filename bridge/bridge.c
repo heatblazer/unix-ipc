@@ -58,12 +58,18 @@ void doTask(struct msg *tc, int res, pid_t t)
 }
 
 
+static int eXec()
+{
+
+}
 
 int main(int argc, char *argv[])
 {
     (void)argc;
     (void) argv;
-
+    if (fork()){
+        exit(0);
+    }
 
     struct flock fl= {F_WRLCK,SEEK_SET,0,0,0};
 
@@ -82,23 +88,21 @@ int main(int argc, char *argv[])
     printf("Waiting for requests from writers and readers ...\n");
 
     for (;;) {
-
         if ((num = read(fdr, ibuff, sizeof(ibuff)))==-1) {
             perror("read");
+
         } else {
             printf("request to work a data\n");
-            doTask((struct msg*)ibuff, 1200, getpid());
-
+//            doTask((struct msg*)ibuff, 1200, getpid());
             // afer that we want to write back to the expected reader
             lockFile(fdw, &fl);
             if ((num = write(fdw, ibuff, sizeof(struct msg))) == -1 ) {
                 perror("write");
                 unlockFile(fdw, &fl);
             } else {
-
+                // what to do here
             }
         }
-
     }
 
     close(fdr);
