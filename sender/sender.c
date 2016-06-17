@@ -37,6 +37,7 @@ int main(int argc, char *argv[])
 
     for (;;)  {
         char mbuff[256]= {0};
+
         while (fgets(mbuff, 256, stdin) >= 0) {
             strcpy(((struct msg*)&buff)->message, mbuff);
             if ((num = write(fd,
