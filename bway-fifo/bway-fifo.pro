@@ -3,5 +3,16 @@ CONFIG += console c++11
 CONFIG -= app_bundle
 CONFIG -= qt
 
-SOURCES += main.c
+SOURCES += \
+    izfifo.c \
+    izlockfile.c \
+    izipcmsg.c \
+    main.c \
+    defs.c
+
+HEADERS += \
+    izfifo.h \
+    defs.h \
+    izlockfile.h \
+    izipcmsg.h
 
