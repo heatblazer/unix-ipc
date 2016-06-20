@@ -56,13 +56,13 @@ int main(int argc, char *argv[])
     (void)argc;
     (void) argv;
     // daemonize it
+
     if (fork()){
         exit(0);
     }
 
 
     struct flock fl= {F_WRLCK,SEEK_SET,0,0,0};
-
     fl.l_pid = getpid(); // bridge`s pid
 
     int num, fdw, fdr;
