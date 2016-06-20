@@ -26,9 +26,10 @@
 #include <sys/ipc.h>
 #include <sys/msg.h>
 
-
-
 #include <sys/types.h>
+// unix sockets
+#include <sys/socket.h>
+#include <sys/un.h>
 
 // msg is passed trough files
 #pragma pack(1)

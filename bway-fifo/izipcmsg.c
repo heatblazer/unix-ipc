@@ -2,7 +2,7 @@
 
 
 
-int iz_send_sys_msg(struct sysmsg *smg)
+int iz_send_sys_msg(const char* msg, struct sysmsg *smg)
 {
     int msgqid;
     key_t key = 1234;
@@ -11,9 +11,8 @@ int iz_send_sys_msg(struct sysmsg *smg)
         perror("msgget");
         return -1;
     }
-    char b[128]={0};
-    sprintf(b, "/tmp/%dw0", getpid());
-    strcpy(smg->mtext, b);
+    strcpy(smg->mtext, msg);
+
     int blen = strlen(smg->mtext)+1;
     if(msgsnd(msgqid, smg, blen, IPC_NOWAIT) < 0) {
         perror("msgsnd");

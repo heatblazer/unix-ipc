@@ -7,7 +7,7 @@
  * @param smg
  * @return
  */
-int     iz_send_sys_msg(struct sysmsg* smg);
+int     iz_send_sys_msg(const char *msg, struct sysmsg* smg);
 
 /** gets a sus message from a queue, usually a FIFO to read from
  * @brief iz_get_sys_msg

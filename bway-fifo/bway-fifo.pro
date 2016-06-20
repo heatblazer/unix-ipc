@@ -8,11 +8,13 @@ SOURCES += \
     izlockfile.c \
     izipcmsg.c \
     main.c \
-    defs.c
+    defs.c \
+    izsocket.c
 
 HEADERS += \
     izfifo.h \
     defs.h \
     izlockfile.h \
-    izipcmsg.h
+    izipcmsg.h \
+    izsocket.h
 

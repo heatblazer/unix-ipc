@@ -7,7 +7,8 @@ SUBDIRS += \
     defs \
     bway-fifo \
     receiver \
-    sender
+    sender \
+    unix-socket-test
 
 
 DESTDIR = ipc
