@@ -18,32 +18,47 @@ int testExec(int argc, char** argv)
 {
     // this is the first msg exchange for the proc id
     (void) argc; (void)argv;
-    iz_server("/tmp/1.1.1.1", 0, 0);
-
-
+//    iz_server("/tmp/1.1.1.1", 0, 0);
 
     struct sysmsg m; // message to write to
     if (argc < 2) {
         fprintf(stderr, "Error usage: use progname <s> or <r>\n");
         exit(1);
     } else {
-        if(*argv[1]=='s') {
+        // S-send
+        if(*argv[1]=='s'|| *argv[1]=='S') {
             printf("Sending a message...\n");
             char* rfifo = iz_get_my_rwfifo();
             if(iz_send_sys_msg(rfifo, &m)==0) {
                 // i`ve sent a message, when received I`ll get a ready fifo
                 // to write to so this can be acceptable loop
                 printf("OK, I`ve sent a message to the reader...\n");
-                struct msg wm;
-
+                // when I send I am opening the fifo
+                mkfifo(m.mtext, 0666);
+                int fdw = open(m.mtext, O_RDWR|O_NONBLOCK);
+                while(1) {
+                    struct msg m1;
+                    iz_msg_generate("hello IPC world", &m1);
+                    if(write(fdw, &m1, sizeof(m1)) < 0) {
+                        perror("write error!");
+                        exit(1);
+                    }
+                    sleep(1);
+                }
             }
         }
-        if (*argv[1]=='r') {
+
+        /* now if there is a message in the queue it must be the
+         * message to the readable fifo
+         * */
+        // R-receive
+        if (*argv[1]=='r'|| *argv[1]=='R') {
             printf("Receiving a message...\n");
             if(iz_get_sys_msg(&m)==0) {
                 struct msg  m1;
-                iz_msg_generate(&m.mtext, &m1);
-                int fdr = iz_open_read_from(&m1);
+                iz_msg_generate(m.mtext, &m1);
+                mkfifo(m.mtext, 0666);
+                int fdr = open(m.mtext, O_RDWR|O_NONBLOCK);
                 if(fdr < 0) {
                     perror("iz_open_read");
                     exit(1);
@@ -51,10 +66,19 @@ int testExec(int argc, char** argv)
                 printf("OK, got and opened a fifo!\n");
                 // start connection and listening to new data ...
                 char rbuff[sizeof(struct msg)]={0};
-                if (read(fdr, rbuff, sizeof(struct msg)) > 0) {
-                    printf("Read...\n");
-                    struct msg* p = (struct msg*) rbuff;
-                    printf("OK, I got a message form the writer!\n");
+                while(1) {
+                    if (read(fdr, rbuff, sizeof(struct msg)) > 0) {
+                        printf("Read...\n");
+                        struct msg* p = (struct msg*) rbuff;
+                        printf("OK, I got a message form the writer!\n");
+                        printf("The message:\n"
+                               "[msg:%s][rf:%s][wf:%s]"
+                               "[pid:%d][ret:%d]", p->message,
+                               p->fifo_files.fifo_read,
+                               p->fifo_files.fifo_write,
+                               p->pid,
+                               p->result);
+                    }
                 }
             }
         }
