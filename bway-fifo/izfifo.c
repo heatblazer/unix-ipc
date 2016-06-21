@@ -83,8 +83,8 @@ int iz_get_msg(const char* fifo, struct msg *data)
 
 int iz_open_read_from(struct msg *m)
 {
-    if(mkfifo(m->fifo_files.fifo_read, 0666)==0) {
-        int fd = open(m->fifo_files.fifo_read, O_RDONLY|O_NONBLOCK);
+    if(mkfifo(m->message, 0666)==0) {
+        int fd = open(m->message, O_RDWR|O_NONBLOCK);
         return fd;
     }
 }
